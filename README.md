@@ -1,16 +1,11 @@
-# heroes_apir
+# HEROES APIR
 
-A new Flutter project.
+The app is a turn-based card battle game where players and the computer select superheroes to fight using stats like intelligence, strength, and speed. The winner of each round draws an additional card from a master deck. The game continues until one party runs out of cards. It also supports bookmarking heroes, tracking gameplay statistics, and browsing hero profiles.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## Notes
+1. This runs with SQLite so run on windows dev not browser.
+2. For API interaction, run proxy server on `/proxy/server.js` via `node server.js`.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Issues
+1. Superheroes API cannot be accessed on flutter due to CORS issues.
