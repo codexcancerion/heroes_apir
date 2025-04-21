@@ -5,42 +5,18 @@ import 'package:http/http.dart' as http;
 
 class SuperheroApi {
   final String proxyUrl = 'http://localhost:3000/api';
-  // final String accessToken = 'eae25af25d8ef0fbf045fd97217bd209';
-
-  // create a function to fetch accessToken from the apiAccessToken from the database
-  final Future<String?> accessToken =
-      DatabaseManager.instance.getApiAccessToken();
-
-  Future<List<HeroModel>> testAccessToken(
-    String accessToken,
-  ) async {
-    final url = Uri.parse('$proxyUrl/$accessToken/1');
-
-    try {
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        List<HeroModel> heroes = [
-          HeroModel.fromJson(json.decode(response.body)),
-        ];
-        return heroes;
-      } else {
-        throw Exception(
-          'Failed to load superhero data: ${response.statusCode}',
-        );
-      }
-    } catch (e) {
-      throw Exception('Error fetching superhero data: $e');
-    }
-  }
 
   // Method to fetch superhero data by ID
-  Future<List<HeroModel>> fetchHeroById(
-    String characterId,
-  ) async {
-    final url = Uri.parse('$proxyUrl/$accessToken/$characterId');
-
+  Future<List<HeroModel>> fetchHeroById(String characterId) async {
     try {
+      // Fetch the access token from the database
+      final token = await DatabaseManager.instance.getApiAccessToken();
+
+      if (token == null) {
+        throw Exception('Access token not found.');
+      }
+
+      final url = Uri.parse('$proxyUrl/$token/$characterId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -66,7 +42,14 @@ class SuperheroApi {
     List<HeroModel> heroes = [];
 
     try {
-      final url = Uri.parse('$proxyUrl/$accessToken/range/$startId/$endId');
+      // Fetch the access token from the database
+      final token = await DatabaseManager.instance.getApiAccessToken();
+
+      if (token == null) {
+        throw Exception('Access token not found.');
+      }
+
+      final url = Uri.parse('$proxyUrl/$token/range/$startId/$endId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -74,12 +57,66 @@ class SuperheroApi {
           heroes.add(HeroModel.fromJson(hero));
         }
       } else {
-        print('Failed to load superheroes: ${response.statusCode}');
+        throw Exception(
+          'Failed to load superheroes: ${response.statusCode}',
+        );
       }
     } catch (e) {
-      print('Error fetching superheroes: $e');
+      throw Exception('Error fetching superheroes: $e');
     }
 
     return heroes;
+  }
+
+  // Method to search for a superhero by name
+  Future<List<HeroModel>> searchHeroByName(String name) async {
+    try {
+      // Fetch the access token from the database
+      final token = await DatabaseManager.instance.getApiAccessToken();
+
+      if (token == null) {
+        throw Exception('Access token not found.');
+      }
+
+      final url = Uri.parse('$proxyUrl/$token/search/$name');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data['response'] == 'success') {
+          List<HeroModel> heroes = [];
+          for (var hero in data['results']) {
+            heroes.add(HeroModel.fromJson(hero));
+          }
+          return heroes;
+        } else {
+          throw Exception('No heroes found with the name: $name');
+        }
+      } else {
+        throw Exception(
+          'Failed to search for superhero: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error searching for superhero: $e');
+    }
+  }
+
+  // Method to test the access token
+  Future<void> testAccessToken(String accessToken) async {
+    final url = Uri.parse('$proxyUrl/$accessToken/1');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to validate access token: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error validating access token: $e');
+    }
   }
 }

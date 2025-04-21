@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:heroes_apir/db/database.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
+import 'package:heroes_apir/screens/mainmenu.dart';
+import 'package:heroes_apir/utils/api.dart';
 import 'package:heroes_apir/widgets/hero_card_widget.dart';
 
 class BookmarksPage extends StatelessWidget {
@@ -109,15 +111,21 @@ class BookmarksPage extends StatelessWidget {
           },
         ),
       ),
+      floatingActionButton: MainMenu(),
     );
   }
 
   Future<List<HeroModel>> _fetchBookmarkedHeroes(List<int> heroIds) async {
     List<HeroModel> heroes = [];
+    final api = SuperheroApi();
     for (int id in heroIds) {
-      final hero = await _dbManager.getHeroById(id);
-      if (hero != null) {
-        heroes.add(hero);
+      try {
+        final hero = await api.fetchHeroById(id.toString());
+        if (hero.isNotEmpty) {
+          heroes.add(hero.first);
+        }
+      } catch (e) {
+        print('Failed to fetch hero with ID $id: $e');
       }
     }
     return heroes;

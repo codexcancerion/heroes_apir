@@ -1,110 +1,160 @@
-
 import 'package:flutter/material.dart';
 import 'package:heroes_apir/screens/bookmarks.dart';
+import 'package:heroes_apir/screens/heroofthedaypage.dart';
 import 'package:heroes_apir/screens/homepage.dart';
+import 'package:heroes_apir/screens/loginpage.dart';
+import 'package:heroes_apir/db/database.dart';
+import 'package:heroes_apir/screens/search_page.dart';
 
 class MainMenu extends StatelessWidget {
   const MainMenu({Key? key}) : super(key: key);
 
+  Future<void> _logout(BuildContext context) async {
+    // Delete the token from the database
+    await DatabaseManager.instance.deleteApiAccessToken();
+
+    // Navigate to the LoginPage
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
+  void _openMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.count(
+            crossAxisCount: 3,
+            mainAxisSpacing: 16, // Adjusted spacing between rows
+            crossAxisSpacing: 16, // Adjusted spacing between columns
+            children: [
+              _buildMenuButton(
+                context,
+                icon: Icons.home,
+                label: 'Home',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                  );
+                },
+              ),
+              _buildMenuButton(
+                context,
+                icon: Icons.sports_martial_arts,
+                label: 'Battleground',
+                onTap: () {
+                  // Navigate to Battle Ground screen
+                },
+              ),
+              _buildMenuButton(
+                context,
+                icon: Icons.bookmark,
+                label: 'Bookmarks',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BookmarksPage()),
+                  );
+                },
+              ),
+              _buildMenuButton(
+                context,
+                icon: Icons.star,
+                label: 'Hero of the Day',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HeroOfTheDayPage()),
+                  );
+                },
+              ),
+              _buildMenuButton(
+                context,
+                icon: Icons.search,
+                label: 'Search',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchPage()),
+                  );
+                },
+              ),
+              _buildMenuButton(
+                context,
+                icon: Icons.logout,
+                label: 'Logout',
+                onTap: () async {
+                  await _logout(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('HEROES APIR'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            // Drawer Header
-            DrawerHeader(
-              decoration: BoxDecoration(
-                      color: ColorScheme.fromSeed(seedColor: Colors.blue).primary,
+    return FloatingMenuButton(onPressed: () => _openMenu(context));
+  }
+
+  Widget _buildMenuButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue.shade700,
+          borderRadius: BorderRadius.circular(12), // Slightly smaller border radius
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0), // Reduced padding inside buttons
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 30, color: Colors.white), // Reduced icon size
+              const SizedBox(height: 6), // Reduced spacing between icon and text
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14, // Reduced font size
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      size: 40,
-                      color: ColorScheme.fromSeed(seedColor: Colors.blue).secondary,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Welcome, Hero!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text(
-                    'Choose your path...',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Menu Items
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.sports_martial_arts),
-              title: const Text('Battle Ground'),
-              onTap: () {
-                // Navigate to Battle Ground screen
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.bookmark),
-              title: const Text('Bookmarks'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => BookmarksPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.star),
-              title: const Text('Hero of the Day'),
-              onTap: () {
-                // Navigate to Hero of the Day screen
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.search),
-              title: const Text('Search'),
-              onTap: () {
-                // Navigate to Search screen
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                // Handle logout functionality
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-      body: HomePage(), // Default body content
+    );
+  }
+}
+
+class FloatingMenuButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const FloatingMenuButton({Key? key, required this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: onPressed,
+      backgroundColor: Colors.blue.shade700,
+      child: const Icon(Icons.menu, color: Colors.white),
     );
   }
 }

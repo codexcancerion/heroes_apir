@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'Heroes App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        fontFamily: 'Marcellus',
       ),
       home: const LoginPage(),
     );

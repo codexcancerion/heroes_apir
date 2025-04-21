@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:heroes_apir/db/database.dart';
-import 'package:heroes_apir/screens/mainmenu.dart';
+import 'package:heroes_apir/screens/homepage.dart';
 import 'package:heroes_apir/utils/api.dart';
-import 'homepage.dart';
 
 class GameStartPage extends StatefulWidget {
   const GameStartPage({Key? key}) : super(key: key);
@@ -29,20 +28,29 @@ class _GameStartPageState extends State<GameStartPage> {
   void initState() {
     super.initState();
     _startLoadingSequence();
-    _checkAndFetchHeroes();
   }
 
-  // Rotates loading messages every 1.5 seconds
+  // Rotates loading messages sequentially and navigates after all messages are shown
   void _startLoadingSequence() {
-    Timer.periodic(const Duration(seconds: 2), (timer) {
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (!mounted) {
         timer.cancel();
         return;
       }
+
       setState(() {
-        _currentMessageIndex =
-            (_currentMessageIndex + 1) % _loadingMessages.length;
+        _currentMessageIndex++;
       });
+
+      if (_currentMessageIndex >= _loadingMessages.length) {
+        timer.cancel();
+        await _checkAndFetchHeroes(); // Ensure heroes are loaded
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
+        }
+      }
     });
   }
 
@@ -58,35 +66,50 @@ class _GameStartPageState extends State<GameStartPage> {
         await _dbManager.saveHero(hero);
       }
     }
-
-    // Navigate to the HomePage after loading is complete
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => MainMenu()),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white, // Set background to white
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Animated loading spinner
-            const CircularProgressIndicator(
-              color: Colors.white,
+            // Animated loading spinner with a fun superhero icon
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularProgressIndicator(
+                  color: Colors.blue.shade700,
+                  strokeWidth: 6,
+                ),
+                Icon(
+                  Icons.flash_on, // Fun superhero-like icon
+                  color: Colors.yellow.shade700,
+                  size: 40,
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            // Display current loading message with modern styling
+            Text(
+              _loadingMessages[_currentMessageIndex % _loadingMessages.length],
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            // Rotating loading messages
-            Text(
-              _loadingMessages[_currentMessageIndex],
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            // Add a fun tagline below the loading message
+            const Text(
+              "Your superhero adventure is about to begin!",
+              style: TextStyle(
+                color: Colors.blueGrey,
+                fontSize: 16,
+                fontStyle: FontStyle.italic,
               ),
               textAlign: TextAlign.center,
             ),

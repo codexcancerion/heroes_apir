@@ -55,6 +55,23 @@ app.get('/api/:token/range/:startId/:endId', async (req, res) => {
   res.json(heroes); // Send the array of heroes back to the client
 });
 
+// Endpoint to search for a hero by name
+app.get('/api/:token/search/:name', async (req, res) => {
+  const { token, name } = req.params;
+  const url = `https://superheroapi.com/api/${token}/search/${name}`;
+
+  console.log(`[${new Date().toISOString()}] Searching for superhero with name: ${name} using token: ${token}`);
+
+  try {
+    const response = await axios.get(url);
+    console.log(`[${new Date().toISOString()}] Successfully fetched search results for name: ${name}`);
+    res.json(response.data); // Send the search results back to the client
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] Error searching for superhero with name: ${name} - ${error.message}`);
+    res.status(500).send('Error searching for superhero.');
+  }
+});
+
 // 🔥 NEW: Image Proxy Route
 app.get('/proxy-image', async (req, res) => {
   const imageUrl = req.query.url;

@@ -1,138 +1,115 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:heroes_apir/db/database.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
+import 'package:heroes_apir/screens/mainmenu.dart';
 import 'package:heroes_apir/utils/api.dart';
-import '/widgets/hero_card_widget.dart'; // Assuming this is the correct path for HeroCardWidget
+import 'package:heroes_apir/widgets/lucky_text.dart';
+import '/widgets/hero_card_widget.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final SuperheroApi api = SuperheroApi();
-  final DatabaseManager _dbManager = DatabaseManager.instance;
+  final ScrollController _scrollController = ScrollController();
+  final List<HeroModel> _heroes = [];
+  bool _isLoading = false;
+  bool _hasMore = true;
 
-  HomePage({Key? key}) : super(key: key);
+  @override
+  void initState() {
+    super.initState();
+    _fetchRandomHeroes(); // Fetch initial heroes
+    // _scrollController.addListener(_onScroll); // Add scroll listener
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose(); // Dispose the scroll controller
+    super.dispose();
+  }
+
+  Future<void> _fetchRandomHeroes() async {
+    if (_isLoading || !_hasMore) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final List<HeroModel> newHeroes = [];
+      for (int i = 0; i < 10; i++) {
+        final randomId = Random().nextInt(731) + 1; // Generate random ID
+        final heroes = await api.fetchHeroById(randomId.toString());
+        if (heroes.isNotEmpty) {
+          newHeroes.add(heroes.first);
+        }
+      }
+
+      setState(() {
+        _heroes.addAll(newHeroes);
+
+        // Remove older heroes if the total exceeds 50
+        if (_heroes.length > 50) {
+          _heroes.removeRange(0, _heroes.length - 50);
+        }
+
+        // Stop fetching if no new heroes are added
+        if (newHeroes.isEmpty) {
+          _hasMore = false;
+        }
+      });
+    } catch (e) {
+      print('Error fetching heroes: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // void _onScroll() {
+  //   if (_scrollController.position.pixels >=
+  //       _scrollController.position.maxScrollExtent - 200) {
+  //     _fetchRandomHeroes(); // Fetch more heroes when near the bottom
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Your Heroes',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Explore the list of your favorite superheroes below.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: FutureBuilder<List<HeroModel>>(
-                future: _dbManager.getAllHeroes(), // Fetch the heroes
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    // Show a loading indicator while waiting for the response
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    // Show an error message if something goes wrong
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                            size: 50,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Failed to load heroes.',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red.shade700,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${snapshot.error}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                    // Show the list of heroes when data is available
-                    final heroes = snapshot.data!;
-                    return ScrollConfiguration(
-                      behavior: ScrollConfiguration.of(context).copyWith(
-                        scrollbars: false, // Disable scrollbars
-                      ),
-                      child: ListView.builder(
-                        itemCount: heroes.length,
-                        itemBuilder: (context, index) {
-                          final hero = heroes[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: HeroCardWidget(hero: hero),
-                          );
-                        },
-                      ),
-                    );
-                  } else {
-                    // Handle the case where no data is available
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.info_outline,
-                            color: Colors.blue,
-                            size: 50,
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'No heroes found.',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Try adding some heroes to your collection.',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: LuckyText(text: "HEROES APIR", fontWeight: FontWeight.bold,),
+        centerTitle: true,
       ),
+      body: _heroes.isEmpty && _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
+              controller: _scrollController,
+              itemCount: _heroes.length + (_hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == _heroes.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      // child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                  child: HeroCardWidget(hero: _heroes[index]),
+                );
+              },
+            ),
+      floatingActionButton: MainMenu(),
     );
   }
 }
