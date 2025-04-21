@@ -6,9 +6,6 @@ const axios = require('axios');
 const app = express();
 const port = 3000;
 
-// SuperHero API credentials
-const baseUrl = 'https://superheroapi.com/api/eae25af25d8ef0fbf045fd97217bd209/';
-
 // CORS Middleware (Allow requests from all origins)
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] Incoming request: ${req.method} ${req.url}`);
@@ -19,31 +16,31 @@ app.use((req, res, next) => {
 });
 
 // Endpoint to fetch superhero data by ID
-app.get('/api/:id', async (req, res) => {
-  const heroId = req.params.id;
-  const url = `${baseUrl}${heroId}`;
+app.get('/api/:token/:id', async (req, res) => {
+  const { token, id } = req.params;
+  const url = `https://superheroapi.com/api/${token}/${id}`;
 
-  console.log(`[${new Date().toISOString()}] Fetching superhero with ID: ${heroId}`);
+  console.log(`[${new Date().toISOString()}] Fetching superhero with ID: ${id} using token: ${token}`);
 
   try {
     const response = await axios.get(url);
-    console.log(`[${new Date().toISOString()}] Successfully fetched superhero with ID: ${heroId}`);
+    console.log(`[${new Date().toISOString()}] Successfully fetched superhero with ID: ${id}`);
     res.json(response.data); // Send the data back to the client
   } catch (error) {
-    console.error(`[${new Date().toISOString()}] Error fetching superhero with ID: ${heroId} - ${error.message}`);
+    console.error(`[${new Date().toISOString()}] Error fetching superhero with ID: ${id} - ${error.message}`);
     res.status(500).send('Error fetching data from the SuperHero API');
   }
 });
 
 // Endpoint to fetch all heroes by range of IDs
-app.get('/api/range/:startId/:endId', async (req, res) => {
-  const { startId, endId } = req.params;
+app.get('/api/:token/range/:startId/:endId', async (req, res) => {
+  const { token, startId, endId } = req.params;
   let heroes = [];
 
-  console.log(`[${new Date().toISOString()}] Fetching superheroes in range: ${startId} to ${endId}`);
+  console.log(`[${new Date().toISOString()}] Fetching superheroes in range: ${startId} to ${endId} using token: ${token}`);
 
   for (let id = parseInt(startId); id <= parseInt(endId); id++) {
-    const url = `${baseUrl}${id}`;
+    const url = `https://superheroapi.com/api/${token}/${id}`;
 
     try {
       const response = await axios.get(url);
@@ -57,7 +54,6 @@ app.get('/api/range/:startId/:endId', async (req, res) => {
   console.log(`[${new Date().toISOString()}] Successfully fetched ${heroes.length} superheroes in range: ${startId} to ${endId}`);
   res.json(heroes); // Send the array of heroes back to the client
 });
-
 
 // 🔥 NEW: Image Proxy Route
 app.get('/proxy-image', async (req, res) => {

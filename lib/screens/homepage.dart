@@ -13,51 +13,118 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Heroes App')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Welcome to the Heroes App!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const Text(
+              'Your Heroes',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
             ),
-            SizedBox(height: 8),
-            Text(
-              'Explore the world of superheroes and learn more about their powers, appearances, and connections.',
-              style: TextStyle(fontSize: 16),
+            const SizedBox(height: 8),
+            const Text(
+              'Explore the list of your favorite superheroes below.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: FutureBuilder<List<HeroModel>>(
                 future: _dbManager.getAllHeroes(), // Fetch the heroes
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     // Show a loading indicator while waiting for the response
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   } else if (snapshot.hasError) {
                     // Show an error message if something goes wrong
                     return Center(
-                      child: Text(
-                        'Failed to load heroes: ${snapshot.error}',
-                        style: TextStyle(color: Colors.red),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                            size: 50,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Failed to load heroes.',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red.shade700,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${snapshot.error}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     );
-                  } else if (snapshot.hasData) {
+                  } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                     // Show the list of heroes when data is available
                     final heroes = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: heroes.length,
-                      itemBuilder: (context, index) {
-                        final hero = heroes[index];
-                        return HeroCardWidget(hero: hero);
-                      },
+                    return ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context).copyWith(
+                        scrollbars: false, // Disable scrollbars
+                      ),
+                      child: ListView.builder(
+                        itemCount: heroes.length,
+                        itemBuilder: (context, index) {
+                          final hero = heroes[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: HeroCardWidget(hero: hero),
+                          );
+                        },
+                      ),
                     );
                   } else {
                     // Handle the case where no data is available
                     return Center(
-                      child: Text('No heroes found.'),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.info_outline,
+                            color: Colors.blue,
+                            size: 50,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'No heroes found.',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Try adding some heroes to your collection.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     );
                   }
                 },

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:heroes_apir/db/database.dart';
+import 'package:heroes_apir/screens/mainmenu.dart';
 import 'package:heroes_apir/utils/api.dart';
 import 'homepage.dart';
 
@@ -61,7 +62,7 @@ class _GameStartPageState extends State<GameStartPage> {
     // Navigate to the HomePage after loading is complete
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => MainMenu()),
       );
     }
   }

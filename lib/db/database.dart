@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/models/PowerStats.dart';
 import 'package:path/path.dart';
-import "package:sqflite/sqflite.dart";
 import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Import sqflite_common_ffi for databaseFactoryFfi
 
 class DatabaseManager {
@@ -22,13 +21,21 @@ class DatabaseManager {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _createDB,
+      onOpen: (db) async {
+        // Run _createDB on every database open to ensure tables exist
+        await _createDB(db, 1);
+      },
+    );
   }
 
   Future _createDB(Database db, int version) async {
-    // Create tables
+    // Create tables only if they do not exist
     await db.execute('''
-      CREATE TABLE heroes (
+      CREATE TABLE IF NOT EXISTS heroes (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         imageUrl TEXT NOT NULL
@@ -36,7 +43,7 @@ class DatabaseManager {
     ''');
 
     await db.execute('''
-      CREATE TABLE powerstats (
+      CREATE TABLE IF NOT EXISTS powerstats (
         heroId INTEGER PRIMARY KEY,
         intelligence INTEGER NOT NULL,
         strength INTEGER NOT NULL,
@@ -49,7 +56,7 @@ class DatabaseManager {
     ''');
 
     await db.execute('''
-      CREATE TABLE biography (
+      CREATE TABLE IF NOT EXISTS biography (
         heroId INTEGER PRIMARY KEY,
         fullName TEXT NOT NULL,
         alterEgos TEXT NOT NULL,
@@ -63,7 +70,7 @@ class DatabaseManager {
     ''');
 
     await db.execute('''
-      CREATE TABLE appearance (
+      CREATE TABLE IF NOT EXISTS appearance (
         heroId INTEGER PRIMARY KEY,
         gender TEXT NOT NULL,
         race TEXT NOT NULL,
@@ -76,7 +83,7 @@ class DatabaseManager {
     ''');
 
     await db.execute('''
-      CREATE TABLE work (
+      CREATE TABLE IF NOT EXISTS work (
         heroId INTEGER PRIMARY KEY,
         occupation TEXT NOT NULL,
         base TEXT NOT NULL,
@@ -85,13 +92,89 @@ class DatabaseManager {
     ''');
 
     await db.execute('''
-      CREATE TABLE connections (
+      CREATE TABLE IF NOT EXISTS connections (
         heroId INTEGER PRIMARY KEY,
         groupAffiliation TEXT NOT NULL,
         relatives TEXT NOT NULL,
         FOREIGN KEY (heroId) REFERENCES heroes (id)
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS apiAccessToken (
+        token TEXT PRIMARY KEY
+      )
+    ''');
+    
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS bookmark (
+        heroId INTEGER PRIMARY KEY
+      )
+    ''');
+  }
+
+  // Method to save the bookmark
+  Future<void> saveBookmark(int heroId) async {
+    final db = await database;
+    await db.insert(
+      'bookmark',
+      {'heroId': heroId},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  // Method to get all bookmarks
+  Future<List<int>> getBookmarks() async {
+    final db = await database;
+    final result = await db.query('bookmark');
+    return result.map((e) => e['heroId'] as int).toList();
+  }
+
+  // Method to delete a bookmark
+  Future<void> deleteBookmark(int heroId) async {
+    final db = await database;
+    await db.delete(
+      'bookmark',
+      where: 'heroId = ?',
+      whereArgs: [heroId],
+    );
+  }
+  
+  // Method to check if a hero is bookmarked
+  Future<bool> isBookmarked(int heroId) async {
+    final db = await database;
+    final result = await db.query(
+      'bookmark',
+      where: 'heroId = ?',
+      whereArgs: [heroId],
+    );
+    return result.isNotEmpty;
+  }
+
+  // Method to save the API access token
+  Future<void> saveApiAccessToken(String token) async {
+    final db = await database;
+    await db.insert(
+      'apiAccessToken',
+      {'token': token},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  // Method to get the API access token
+  Future<String?> getApiAccessToken() async {
+    final db = await database;
+    final result = await db.query('apiAccessToken', limit: 1);
+    if (result.isNotEmpty) {
+      return result.first['token'] as String?;
+    }
+    return null;
+  }
+
+  // Method to delete the API access token
+  Future<void> deleteApiAccessToken() async {
+    final db = await database;
+    await db.delete('apiAccessToken');
   }
 
   Future<void> saveHero(HeroModel hero) async {
