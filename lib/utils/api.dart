@@ -105,12 +105,20 @@ class SuperheroApi {
 
   // Method to test the access token
   Future<void> testAccessToken(String accessToken) async {
-    final url = Uri.parse('$proxyUrl/$accessToken/1');
+    final url = Uri.parse('$proxyUrl/test?token=$accessToken'); // Updated to use query parameter
 
     try {
       final response = await http.get(url);
 
-      if (response.statusCode != 200) {
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          // Token is valid
+          return;
+        } else {
+          throw Exception(data['message'] ?? 'Token is invalid.');
+        }
+      } else {
         throw Exception(
           'Failed to validate access token: ${response.statusCode}',
         );

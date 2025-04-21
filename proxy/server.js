@@ -24,8 +24,13 @@ app.get('/api/:token/:id', async (req, res) => {
 
   try {
     const response = await axios.get(url);
+    if (!response.data || !response.data.id) {
+      console.error(`[${new Date().toISOString()}] Invalid response for ID: ${id}`);
+      return res.status(404).send('Superhero not found');
+    }
     console.log(`[${new Date().toISOString()}] Successfully fetched superhero with ID: ${id}`);
-    res.json(response.data); // Send the data back to the client
+    res.json(response.data); // Send the superhero data back to the client
+    // Add any additional logic here if needed
   } catch (error) {
     console.error(`[${new Date().toISOString()}] Error fetching superhero with ID: ${id} - ${error.message}`);
     res.status(500).send('Error fetching data from the SuperHero API');
@@ -94,6 +99,59 @@ app.get('/proxy-image', async (req, res) => {
   } catch (error) {
     console.error('Error proxying image:', error.message);
     res.status(500).send('Failed to fetch image.');
+  }
+});
+
+// Endpoint to test if a token works
+app.get('/api/:token/test', async (req, res) => {
+  const { token } = req.params;
+  console.log(`[${new Date().toISOString()}] Testing token: ${token}`);
+  const testUrl = `https://superheroapi.com/api/${token}/1`; // Test with a known valid ID (e.g., 1)
+
+  console.log(`[${new Date().toISOString()}] Testing token: ${token}`);
+
+  try {
+    const response = await axios.get(testUrl);
+
+    // Check if the response contains valid data
+    if (response.data && response.data.id) {
+      console.log(`[${new Date().toISOString()}] Token is valid.`);
+      return res.json({ success: true, message: 'Token is valid.' });
+    } else {
+      console.error(`[${new Date().toISOString()}] Token is invalid.`);
+      return res.status(400).json({ success: false, message: 'Token is invalid or does not work.' });
+    }
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] Error testing token: ${error.message}`);
+    return res.status(500).json({ success: false, message: 'Error testing token.', error: error.message });
+  }
+});
+
+// Endpoint to test if a token works
+app.get('/api/test', async (req, res) => {
+  const { token } = req.query; // Use query parameter for the token
+  const testUrl = `https://superheroapi.com/api/${token}/1`; // Test with a known valid ID (e.g., 1)
+
+  console.log(`[${new Date().toISOString()}] Testing token: ${token}`);
+
+  if (!token) {
+    return res.status(400).json({ success: false, message: 'Missing token query parameter.' });
+  }
+
+  try {
+    const response = await axios.get(testUrl);
+
+    // Check if the response contains valid data
+    if (response.data && response.data.id) {
+      console.log(`[${new Date().toISOString()}] Token is valid.`);
+      return res.json({ success: true, message: 'Token is valid.' });
+    } else {
+      console.error(`[${new Date().toISOString()}] Token is invalid.`);
+      return res.status(400).json({ success: false, message: 'Token is invalid or does not work.' });
+    }
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] Error testing token: ${error.message}`);
+    return res.status(500).json({ success: false, message: 'Error testing token.', error: error.message });
   }
 });
 
