@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
               : SingleChildScrollView(
                 controller: _scrollController,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Welcome Message
                     Container(
