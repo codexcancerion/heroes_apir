@@ -5,7 +5,7 @@ The app is a turn-based card battle game where players and the computer select s
 
 ## Notes
 1. This runs with SQLite so run on windows dev not browser.
-2. For API interaction, run proxy server on `/proxy/server.js` via `node server.js`.
+2. Supeheroes API interaction flows through `https://superheroes-proxy.vercel.app/api/` due to CORS issues on flutter.
 
 ## Issues
 1. Superheroes API cannot be accessed on flutter due to CORS issues.
