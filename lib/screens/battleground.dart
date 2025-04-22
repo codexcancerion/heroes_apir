@@ -93,10 +93,10 @@ class _BattlegroundState extends State<Battleground> {
       );
 
       if (_lastBattleResult!.winner == 'player') {
-        _battleResultMessage = 'Player wins this round!';
+        _battleResultMessage = 'You won this round!';
         _gameEngine.player.deck.add(computerCard);
       } else if (_lastBattleResult!.winner == 'computer') {
-        _battleResultMessage = 'Computer wins this round!';
+        _battleResultMessage = 'Computer won this round!';
         _gameEngine.computer.deck.add(_selectedPlayerCard!);
       } else {
         _battleResultMessage = 'It\'s a draw!';
@@ -109,6 +109,21 @@ class _BattlegroundState extends State<Battleground> {
   }
 
   void _nextRound() {
+    if (_gameEngine.player.deck.isEmpty || _gameEngine.computer.deck.isEmpty) {
+      final winner =
+          _gameEngine.player.deck.isEmpty
+              ? 'Computer Won the Game!'
+              : 'You Won the Game!';
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder:
+              (context) =>
+                  GameOverScreen(winner: winner, onRestart: _restartGame),
+        ),
+      );
+      return;
+    }
     setState(() {
       _battleResultMessage = null;
       _lastBattleResult = null;
@@ -118,6 +133,7 @@ class _BattlegroundState extends State<Battleground> {
   }
 
   void _restartGame() {
+    if (!mounted) return; // Ensure the widget is still in the tree
     setState(() {
       _battleResultMessage = null;
       _lastBattleResult = null;

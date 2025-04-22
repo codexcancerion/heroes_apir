@@ -12,7 +12,7 @@ class HeroCardWidget extends StatefulWidget {
   const HeroCardWidget({
     Key? key,
     required this.hero,
-    this.imageProxyUrl = "http://localhost:3000/proxy-image?url=",
+    this.imageProxyUrl = "https://superheroes-proxy.vercel.app/api/proxy-image?url=",
     this.isSelected = false, // Default value is false
   }) : super(key: key);
 

@@ -4,7 +4,7 @@ import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:http/http.dart' as http;
 
 class SuperheroApi {
-  final String proxyUrl = 'http://localhost:3000/api';
+  final String proxyUrl = 'https://superheroes-proxy.vercel.app/api';
   final ApiAccessTokenDao _apiAccessTokenDao = ApiAccessTokenDao();
 
   // Method to fetch superhero data by ID

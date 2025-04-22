@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:heroes_apir/db/database_manager.dart';
 import 'package:heroes_apir/db/hero_dao.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
+import 'package:heroes_apir/screens/battleground.dart';
+import 'package:heroes_apir/screens/heroofthedaypage.dart';
 import 'package:heroes_apir/screens/mainmenu.dart';
 import 'package:heroes_apir/widgets/lucky_text.dart';
 import '/widgets/hero_card_widget.dart';
@@ -46,7 +48,9 @@ class _HomePageState extends State<HomePage> {
       final List<HeroModel> newHeroes = [];
       for (int i = 0; i < 10; i++) {
         final randomId = Random().nextInt(731) + 1; // Generate random ID
-        final hero = await _heroDao.getHeroById(randomId); // Fetch hero from the database
+        final hero = await _heroDao.getHeroById(
+          randomId,
+        ); // Fetch hero from the database
         if (hero != null) {
           newHeroes.add(hero);
         }
@@ -84,36 +88,146 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: LuckyText(
-          text: "HEROES APIR",
-          fontWeight: FontWeight.bold,
-        ),
-        centerTitle: true,
-      ),
-      body: _heroes.isEmpty && _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              controller: _scrollController,
-              itemCount: _heroes.length + (_hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == _heroes.length) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(
-                      // child: CircularProgressIndicator(),
+      body:
+          _heroes.isEmpty && _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Welcome Message
+                    Container(
+                      height: 500,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // High-Five Emoji
+                            Text(
+                              "🙌", // High-five emoji
+                              style: const TextStyle(
+                                fontSize: 80, // Large size for the emoji
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Title Text
+                            Text(
+                              "Heroes Apir!",
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue.shade700,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+
+                            // Subtitle Text
+                            Text(
+                              "Discover and explore a collection of heroes from the database. "
+                              "Scroll down to see more heroes and learn about their unique abilities.",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Quick Action Buttons
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 16.0, // Space between buttons horizontally
+                              runSpacing: 16.0, // Space between buttons vertically
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Battleground(),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue.shade700,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text('Battle Heroes'),
+                                ),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HeroOfTheDayPage(),
+                                      ),
+                                    );
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.blue.shade700),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text('See Hero of the Day'),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+                            Text(
+                              "Swipe down to refresh or scroll to load more heroes.",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  );
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  child: HeroCardWidget(hero: _heroes[index]),
-                );
-              },
-            ),
+
+                    // Hero Cards
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _heroes.length + (_hasMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == _heroes.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8.0,
+                            horizontal: 16.0,
+                          ),
+                          child: HeroCardWidget(hero: _heroes[index]),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
       floatingActionButton: MainMenu(),
     );
   }
