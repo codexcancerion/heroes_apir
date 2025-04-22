@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:heroes_apir/db/database.dart';
+import 'package:heroes_apir/db/bookmark_dao.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/widgets/powerstats_widget.dart';
 
@@ -14,6 +14,7 @@ class HeroDetailsWidget extends StatefulWidget {
 
 class _HeroDetailsWidgetState extends State<HeroDetailsWidget> {
   bool _isBookmarked = false;
+  final BookmarkDao _bookmarkDao = BookmarkDao();
 
   @override
   void initState() {
@@ -22,7 +23,7 @@ class _HeroDetailsWidgetState extends State<HeroDetailsWidget> {
   }
 
   Future<void> _checkIfBookmarked() async {
-    final isBookmarked = await DatabaseManager.instance.isBookmarked(widget.hero.id);
+    final isBookmarked = await _bookmarkDao.isBookmarked(widget.hero.id);
     setState(() {
       _isBookmarked = isBookmarked;
     });
@@ -30,9 +31,9 @@ class _HeroDetailsWidgetState extends State<HeroDetailsWidget> {
 
   Future<void> _toggleBookmark() async {
     if (_isBookmarked) {
-      await DatabaseManager.instance.deleteBookmark(widget.hero.id);
+      await _bookmarkDao.deleteBookmark(widget.hero.id);
     } else {
-      await DatabaseManager.instance.saveBookmark(widget.hero.id);
+      await _bookmarkDao.saveBookmark(widget.hero.id);
     }
     setState(() {
       _isBookmarked = !_isBookmarked;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:heroes_apir/db/database.dart';
+import 'package:heroes_apir/db/api_access_token_dao.dart';
 import 'package:heroes_apir/screens/gamestartpage.dart';
 import 'package:heroes_apir/utils/api.dart';
 
@@ -13,6 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _tokenController = TextEditingController();
   final SuperheroApi _api = SuperheroApi();
+  final ApiAccessTokenDao _apiAccessTokenDao = ApiAccessTokenDao();
   String? _errorMessage;
   bool _isLoading = false;
 
@@ -28,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      final savedToken = await DatabaseManager.instance.getApiAccessToken();
+      final savedToken = await _apiAccessTokenDao.getApiAccessToken();
 
       if (savedToken != null) {
         // If a token exists, validate it by calling the API
@@ -151,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
       await _api.testAccessToken(token);
 
       // Save the token to the database
-      await DatabaseManager.instance.saveApiAccessToken(token);
+      await _apiAccessTokenDao.saveApiAccessToken(token);
 
       // Navigate to the GameStartPage
       Navigator.pushReplacement(

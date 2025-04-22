@@ -1,8 +1,11 @@
 import 'package:heroes_apir/models/HeroModel.dart';
 
-class CardModel {
+class Card {
   final int id;
   final HeroModel hero;
 
-  CardModel({required this.id, required this.hero});
+  Card({
+    required this.id,
+    required this.hero,
+  });
 }

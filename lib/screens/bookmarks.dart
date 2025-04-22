@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:heroes_apir/db/database.dart';
+import 'package:heroes_apir/db/bookmark_dao.dart';
+import 'package:heroes_apir/db/hero_dao.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/screens/mainmenu.dart';
-import 'package:heroes_apir/utils/api.dart';
 import 'package:heroes_apir/widgets/hero_card_widget.dart';
 
 class BookmarksPage extends StatelessWidget {
-  final DatabaseManager _dbManager = DatabaseManager.instance;
+  final HeroDao _heroDao = HeroDao();
+  final BookmarkDao _bookmarkDao = BookmarkDao();
 
   BookmarksPage({Key? key}) : super(key: key);
 
@@ -21,7 +22,7 @@ class BookmarksPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<List<int>>(
-          future: _dbManager.getBookmarks(), // Fetch bookmarked hero IDs
+          future: _bookmarkDao.getBookmarks(), // Fetch bookmarked hero IDs
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               // Show a loading indicator while waiting for the response
@@ -117,17 +118,18 @@ class BookmarksPage extends StatelessWidget {
 
   Future<List<HeroModel>> _fetchBookmarkedHeroes(List<int> heroIds) async {
     List<HeroModel> heroes = [];
-    final api = SuperheroApi();
+
     for (int id in heroIds) {
       try {
-        final hero = await api.fetchHeroById(id.toString());
-        if (hero.isNotEmpty) {
-          heroes.add(hero.first);
+        final hero = await _heroDao.getHeroById(id); // Fetch hero from the database
+        if (hero != null) {
+          heroes.add(hero);
         }
       } catch (e) {
-        print('Failed to fetch hero with ID $id: $e');
+        print('Failed to fetch hero with ID $id from the database: $e');
       }
     }
+
     return heroes;
   }
 }

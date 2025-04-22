@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:heroes_apir/db/database.dart';
+import 'package:heroes_apir/db/database_manager.dart';
+import 'package:heroes_apir/db/hero_dao.dart';
 import 'package:heroes_apir/screens/homepage.dart';
 import 'package:heroes_apir/utils/api.dart';
 
@@ -14,13 +15,14 @@ class GameStartPage extends StatefulWidget {
 class _GameStartPageState extends State<GameStartPage> {
   final DatabaseManager _dbManager = DatabaseManager.instance;
   final SuperheroApi _api = SuperheroApi();
+  final HeroDao _heroDao = HeroDao();
   final List<String> _loadingMessages = [
     "Loading heroes...",
-    "Assembling the Justice League...",
-    "Calling the Avengers...",
-    "Powering up the Bat-Signal...",
-    "Scanning for supervillains...",
-    "Preparing your hero database...",
+    // "Assembling the Justice League...",
+    // "Calling the Avengers...",
+    // "Powering up the Bat-Signal...",
+    // "Scanning for supervillains...",
+    // "Preparing your hero database...",
   ];
   int _currentMessageIndex = 0;
 
@@ -61,9 +63,9 @@ class _GameStartPageState extends State<GameStartPage> {
 
     if (heroes.isEmpty) {
       // No heroes in the database, fetch from API
-      final fetchedHeroes = await _api.fetchAllHeroes(startId: 1, endId: 150);
+      final fetchedHeroes = await _api.fetchAllHeroes(startId: 1, endId: 731);
       for (var hero in fetchedHeroes) {
-        await _dbManager.saveHero(hero);
+        await _heroDao.saveHero(hero);
       }
     }
   }

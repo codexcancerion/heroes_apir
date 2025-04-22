@@ -1,16 +1,17 @@
 import 'dart:convert';
-import 'package:heroes_apir/db/database.dart';
+import 'package:heroes_apir/db/api_access_token_dao.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:http/http.dart' as http;
 
 class SuperheroApi {
   final String proxyUrl = 'http://localhost:3000/api';
+  final ApiAccessTokenDao _apiAccessTokenDao = ApiAccessTokenDao();
 
   // Method to fetch superhero data by ID
   Future<List<HeroModel>> fetchHeroById(String characterId) async {
     try {
       // Fetch the access token from the database
-      final token = await DatabaseManager.instance.getApiAccessToken();
+      final token = await _apiAccessTokenDao.getApiAccessToken();
 
       if (token == null) {
         throw Exception('Access token not found.');
@@ -43,7 +44,7 @@ class SuperheroApi {
 
     try {
       // Fetch the access token from the database
-      final token = await DatabaseManager.instance.getApiAccessToken();
+      final token = await _apiAccessTokenDao.getApiAccessToken();
 
       if (token == null) {
         throw Exception('Access token not found.');
@@ -72,7 +73,7 @@ class SuperheroApi {
   Future<List<HeroModel>> searchHeroByName(String name) async {
     try {
       // Fetch the access token from the database
-      final token = await DatabaseManager.instance.getApiAccessToken();
+      final token = await _apiAccessTokenDao.getApiAccessToken();
 
       if (token == null) {
         throw Exception('Access token not found.');

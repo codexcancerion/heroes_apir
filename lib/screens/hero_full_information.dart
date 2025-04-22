@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/screens/mainmenu.dart';
-import 'package:heroes_apir/widgets/hero_details_widget.dart'; // Import the reusable HeroDetailsWidget
+import 'package:heroes_apir/widgets/hero_details_widget.dart'; 
 
 class HeroFullInformation extends StatelessWidget {
   final HeroModel hero;
@@ -14,7 +14,7 @@ class HeroFullInformation extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Hero Information'),
       ),
-      body: HeroDetailsWidget(hero: hero), // Use the reusable widget
+      body: HeroDetailsWidget(hero: hero),
       floatingActionButton: MainMenu(),
     );
   }

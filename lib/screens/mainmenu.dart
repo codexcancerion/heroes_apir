@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:heroes_apir/db/api_access_token_dao.dart';
+import 'package:heroes_apir/screens/battleground.dart';
 import 'package:heroes_apir/screens/bookmarks.dart';
 import 'package:heroes_apir/screens/heroofthedaypage.dart';
 import 'package:heroes_apir/screens/homepage.dart';
 import 'package:heroes_apir/screens/loginpage.dart';
-import 'package:heroes_apir/db/database.dart';
 import 'package:heroes_apir/screens/search_page.dart';
+import 'package:heroes_apir/screens/testpage.dart';
 
 class MainMenu extends StatelessWidget {
   const MainMenu({Key? key}) : super(key: key);
 
   Future<void> _logout(BuildContext context) async {
+  final ApiAccessTokenDao _apiAccessTokenDao = ApiAccessTokenDao();
     // Delete the token from the database
-    await DatabaseManager.instance.deleteApiAccessToken();
+    await _apiAccessTokenDao.deleteApiAccessToken();
 
     // Navigate to the LoginPage
     Navigator.pushAndRemoveUntil(
@@ -51,7 +54,10 @@ class MainMenu extends StatelessWidget {
                 icon: Icons.sports_martial_arts,
                 label: 'Battleground',
                 onTap: () {
-                  // Navigate to Battle Ground screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Battleground()),
+                  );
                 },
               ),
               _buildMenuButton(
@@ -84,6 +90,17 @@ class MainMenu extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SearchPage()),
+                  );
+                },
+              ),
+              _buildMenuButton(
+                context,
+                icon: Icons.science, 
+                label: 'Test Page',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TestPage()),
                   );
                 },
               ),

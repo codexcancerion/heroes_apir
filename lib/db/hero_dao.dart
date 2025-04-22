@@ -1,181 +1,12 @@
-import 'dart:async';
+import 'package:heroes_apir/db/database_manager.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/models/PowerStats.dart';
-import 'package:path/path.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Import sqflite_common_ffi for databaseFactoryFfi
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-class DatabaseManager {
-  static final DatabaseManager instance = DatabaseManager._init();
-  static Database? _database;
+class HeroDao {
+  final DatabaseManager _dbManager = DatabaseManager.instance;
 
-  DatabaseManager._init();
-
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDB('heroes_apir.db');
-    return _database!;
-  }
-
-  Future<Database> _initDB(String fileName) async {
-    databaseFactory = databaseFactoryFfi;
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, fileName);
-
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _createDB,
-      onOpen: (db) async {
-        // Run _createDB on every database open to ensure tables exist
-        await _createDB(db, 1);
-      },
-    );
-  }
-
-  Future _createDB(Database db, int version) async {
-    // Create tables only if they do not exist
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS heroes (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        imageUrl TEXT NOT NULL
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS powerstats (
-        heroId INTEGER PRIMARY KEY,
-        intelligence INTEGER NOT NULL,
-        strength INTEGER NOT NULL,
-        speed INTEGER NOT NULL,
-        durability INTEGER NOT NULL,
-        power INTEGER NOT NULL,
-        combat INTEGER NOT NULL,
-        FOREIGN KEY (heroId) REFERENCES heroes (id)
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS biography (
-        heroId INTEGER PRIMARY KEY,
-        fullName TEXT NOT NULL,
-        alterEgos TEXT NOT NULL,
-        aliases TEXT NOT NULL,
-        placeOfBirth TEXT NOT NULL,
-        firstAppearance TEXT NOT NULL,
-        publisher TEXT NOT NULL,
-        alignment TEXT NOT NULL,
-        FOREIGN KEY (heroId) REFERENCES heroes (id)
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS appearance (
-        heroId INTEGER PRIMARY KEY,
-        gender TEXT NOT NULL,
-        race TEXT NOT NULL,
-        height TEXT NOT NULL,
-        weight TEXT NOT NULL,
-        eyeColor TEXT NOT NULL,
-        hairColor TEXT NOT NULL,
-        FOREIGN KEY (heroId) REFERENCES heroes (id)
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS work (
-        heroId INTEGER PRIMARY KEY,
-        occupation TEXT NOT NULL,
-        base TEXT NOT NULL,
-        FOREIGN KEY (heroId) REFERENCES heroes (id)
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS connections (
-        heroId INTEGER PRIMARY KEY,
-        groupAffiliation TEXT NOT NULL,
-        relatives TEXT NOT NULL,
-        FOREIGN KEY (heroId) REFERENCES heroes (id)
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS apiAccessToken (
-        token TEXT PRIMARY KEY
-      )
-    ''');
-    
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS bookmark (
-        heroId INTEGER PRIMARY KEY
-      )
-    ''');
-  }
-
-  // Method to save the bookmark
-  Future<void> saveBookmark(int heroId) async {
-    final db = await database;
-    await db.insert(
-      'bookmark',
-      {'heroId': heroId},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  // Method to get all bookmarks
-  Future<List<int>> getBookmarks() async {
-    final db = await database;
-    final result = await db.query('bookmark');
-    return result.map((e) => e['heroId'] as int).toList();
-  }
-
-  // Method to delete a bookmark
-  Future<void> deleteBookmark(int heroId) async {
-    final db = await database;
-    await db.delete(
-      'bookmark',
-      where: 'heroId = ?',
-      whereArgs: [heroId],
-    );
-  }
-  
-  // Method to check if a hero is bookmarked
-  Future<bool> isBookmarked(int heroId) async {
-    final db = await database;
-    final result = await db.query(
-      'bookmark',
-      where: 'heroId = ?',
-      whereArgs: [heroId],
-    );
-    return result.isNotEmpty;
-  }
-
-  // Method to save the API access token
-  Future<void> saveApiAccessToken(String token) async {
-    final db = await database;
-    await db.insert(
-      'apiAccessToken',
-      {'token': token},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  // Method to get the API access token
-  Future<String?> getApiAccessToken() async {
-    final db = await database;
-    final result = await db.query('apiAccessToken', limit: 1);
-    if (result.isNotEmpty) {
-      return result.first['token'] as String?;
-    }
-    return null;
-  }
-
-  // Method to delete the API access token
-  Future<void> deleteApiAccessToken() async {
-    final db = await database;
-    await db.delete('apiAccessToken');
-  }
+  Future<Database> get database async => await _dbManager.database;
 
   Future<void> saveHero(HeroModel hero) async {
     final db = await database;
@@ -235,6 +66,7 @@ class DatabaseManager {
       'relatives': hero.connections.relatives,
     });
   }
+
 
   Future<HeroModel?> getHeroById(int id) async {
     final db = await database;
@@ -340,8 +172,5 @@ class DatabaseManager {
     return heroes;
   }
 
-  Future close() async {
-    final db = await instance.database;
-    db.close();
-  }
+
 }

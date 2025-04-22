@@ -1,8 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:heroes_apir/db/database_manager.dart';
+import 'package:heroes_apir/db/hero_dao.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/screens/mainmenu.dart';
-import 'package:heroes_apir/utils/api.dart';
 import 'package:heroes_apir/widgets/hero_details_widget.dart';
 
 class HeroOfTheDayPage extends StatefulWidget {
@@ -13,7 +14,8 @@ class HeroOfTheDayPage extends StatefulWidget {
 }
 
 class _HeroOfTheDayPage extends State<HeroOfTheDayPage> {
-  final SuperheroApi api = SuperheroApi();
+  final DatabaseManager dbManager = DatabaseManager.instance;
+  final HeroDao _heroDao = HeroDao();
   HeroModel? hero;
   bool _isLoading = true;
   String? _errorMessage;
@@ -34,15 +36,15 @@ class _HeroOfTheDayPage extends State<HeroOfTheDayPage> {
       // Generate a random number between 1 and 731
       final randomId = Random().nextInt(731) + 1;
 
-      // Fetch the hero by ID
-      final heroes = await api.fetchHeroById(randomId.toString());
-      if (heroes.isNotEmpty) {
+      // Fetch the hero by ID from the database
+      final fetchedHero = await _heroDao.getHeroById(randomId);
+      if (fetchedHero != null) {
         setState(() {
-          hero = heroes.first;
+          hero = fetchedHero;
         });
       } else {
         setState(() {
-          _errorMessage = 'Hero not found.';
+          _errorMessage = 'Hero not found in the database.';
         });
       }
     } catch (e) {
