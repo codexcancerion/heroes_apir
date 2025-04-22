@@ -5,7 +5,6 @@ import 'package:heroes_apir/models/GameEngine.dart';
 import 'package:heroes_apir/models/BattleResult.dart';
 import 'package:heroes_apir/db/hero_dao.dart';
 import 'package:heroes_apir/screens/game_over.dart';
-import 'package:heroes_apir/screens/mainmenu.dart';
 import 'package:heroes_apir/widgets/small_hero_card.dart';
 
 class Battleground extends StatefulWidget {

@@ -6,7 +6,6 @@ import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/screens/battleground.dart';
 import 'package:heroes_apir/screens/heroofthedaypage.dart';
 import 'package:heroes_apir/screens/mainmenu.dart';
-import 'package:heroes_apir/widgets/lucky_text.dart';
 import '/widgets/hero_card_widget.dart';
 
 class HomePage extends StatefulWidget {
