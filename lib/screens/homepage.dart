@@ -95,107 +95,125 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     // Welcome Message
                     SizedBox(
-                      height: 500,
+                      height: 560,
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // High-Five Emoji
-                            Text(
-                              "🙌", // High-five emoji
-                              style: const TextStyle(
-                                fontSize: 80, // Large size for the emoji
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Title Text
-                            Text(
-                              "Heroes Apir!",
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue.shade700,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-
-                            // Subtitle Text
-                            Text(
-                              "Discover and explore a collection of heroes from the database. "
-                              "Scroll down to see more heroes and learn about their unique abilities.",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black87,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Quick Action Buttons
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 16.0, // Space between buttons horizontally
-                              runSpacing: 16.0, // Space between buttons vertically
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Battleground(),
+                            SizedBox(
+                              height: 500,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Replace High-Five Emoji with an Image
+                                    Container(
+                                      height: 80, // Adjust the height as needed
+                                      width: 80,  // Adjust the width as needed
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: const DecorationImage(
+                                          image: AssetImage('assets/icon/app_icon.png'), // Path to the image
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue.shade700,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: const Text('Battle Heroes'),
-                                ),
-                                OutlinedButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => HeroOfTheDayPage(),
+                                    const SizedBox(height: 16),
+                            
+                                    // Title Text
+                                    Text(
+                                      "Heroes Apir!",
+                                      style: TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue.shade700,
                                       ),
-                                    );
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.blue.shade700),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                    const SizedBox(height: 8),
+                            
+                                    // Subtitle Text
+                                    Text(
+                                      "Discover and explore a collection of heroes from the database. "
+                                      "Scroll down to see more heroes and learn about their unique abilities.",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                  child: const Text('See Hero of the Day'),
+                                    const SizedBox(height: 16),
+                            
+                                    // Quick Action Buttons
+                                    Wrap(
+                                      alignment: WrapAlignment.center,
+                                      spacing: 16.0, // Space between buttons horizontally
+                                      runSpacing: 16.0, // Space between buttons vertically
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => Battleground(),
+                                              ),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.blue.shade700,
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 24,
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          child: const Text('Battle Heroes'),
+                                        ),
+                                        OutlinedButton(
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => HeroOfTheDayPage(),
+                                              ),
+                                            );
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(color: Colors.blue.shade700),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 24,
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          child: const Text('See Hero of the Day'),
+                                        ),
+                                      ],
+                                    ),
+                            
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      "Swipe down to refresh or scroll to load more heroes.",
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.grey,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 16),
-                            Text(
-                              "Swipe down to refresh or scroll to load more heroes.",
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.grey,
                               ),
-                              textAlign: TextAlign.center,
                             ),
+                            const SizedBox(height: 16),
                           ],
                         ),
                       ),

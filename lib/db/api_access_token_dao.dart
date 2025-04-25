@@ -14,13 +14,13 @@ class ApiAccessTokenDao {
   }
 
   Future<String?> getApiAccessToken() async {
-    // final db = await _dbManager.database;
-    // final result = await db.query('apiAccessToken', limit: 1);
-    // if (result.isNotEmpty) {
-    //  return result.first['token'] as String?;
-    // }
-    // return null;
-    return "eae25af25d8ef0fbf045fd97217bd209";
+    final db = await _dbManager.database;
+    final result = await db.query('apiAccessToken', limit: 1);
+    if (result.isNotEmpty) {
+     return result.first['token'] as String?;
+    }
+    return null;
+    // return "eae25af25d8ef0fbf045fd97217bd209";
   }
 
   Future<void> deleteApiAccessToken() async {
