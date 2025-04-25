@@ -27,7 +27,13 @@ class DatabaseManager {
     final exists = await databaseExists(path);
 
     if (!exists) {
-      // If the database does not exist, copy it from assets
+      // Create an empty database to initialize the path
+      print('Creating an empty database...');
+      await openDatabase(path).then((db) async {
+        await db.close();
+      });
+
+      // Copy the pre-populated database from assets
       print('Copying pre-populated database from assets...');
       try {
         final data = await rootBundle.load('assets/database/$fileName');
