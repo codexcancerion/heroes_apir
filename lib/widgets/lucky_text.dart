@@ -7,12 +7,12 @@ class LuckyText extends StatelessWidget {
   final FontWeight fontWeight;
 
   const LuckyText({
-    Key? key,
+    super.key,
     required this.text,
     this.fontSize = 24.0, // Default font size
     this.color = Colors.black87, // Default color
     this.fontWeight = FontWeight.normal, // Default weight
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

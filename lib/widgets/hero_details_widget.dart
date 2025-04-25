@@ -6,7 +6,7 @@ import 'package:heroes_apir/widgets/powerstats_widget.dart';
 class HeroDetailsWidget extends StatefulWidget {
   final HeroModel hero;
 
-  const HeroDetailsWidget({Key? key, required this.hero}) : super(key: key);
+  const HeroDetailsWidget({super.key, required this.hero});
 
   @override
   _HeroDetailsWidgetState createState() => _HeroDetailsWidgetState();

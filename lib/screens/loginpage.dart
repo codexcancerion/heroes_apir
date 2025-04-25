@@ -4,7 +4,7 @@ import 'package:heroes_apir/screens/gamestartpage.dart';
 import 'package:heroes_apir/utils/api.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -45,7 +45,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       // If the saved token is invalid, do nothing and allow the user to log in
-      print('Saved token is invalid: $e');
     } finally {
       setState(() {
         _isLoading = false;

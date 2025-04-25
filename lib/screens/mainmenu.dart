@@ -9,12 +9,12 @@ import 'package:heroes_apir/screens/search_page.dart';
 import 'package:heroes_apir/screens/testpage.dart';
 
 class MainMenu extends StatelessWidget {
-  const MainMenu({Key? key}) : super(key: key);
+  const MainMenu({super.key});
 
   Future<void> _logout(BuildContext context) async {
-  final ApiAccessTokenDao _apiAccessTokenDao = ApiAccessTokenDao();
+  final ApiAccessTokenDao apiAccessTokenDao = ApiAccessTokenDao();
     // Delete the token from the database
-    await _apiAccessTokenDao.deleteApiAccessToken();
+    await apiAccessTokenDao.deleteApiAccessToken();
 
     // Navigate to the LoginPage
     Navigator.pushAndRemoveUntil(
@@ -164,7 +164,7 @@ class MainMenu extends StatelessWidget {
 class FloatingMenuButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const FloatingMenuButton({Key? key, required this.onPressed}) : super(key: key);
+  const FloatingMenuButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

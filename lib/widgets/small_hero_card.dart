@@ -11,11 +11,11 @@ class SmallHeroCard extends StatefulWidget {
   final bool isSelected; // Parameter to indicate selection
 
   const SmallHeroCard({
-    Key? key,
+    super.key,
     required this.hero,
     this.imageProxyUrl = "https://superheroes-proxy.vercel.app/api/proxy-image?url=",
     this.isSelected = true, // Default value is false
-  }) : super(key: key);
+  });
 
   @override
   _SmallHeroCardState createState() => _SmallHeroCardState();

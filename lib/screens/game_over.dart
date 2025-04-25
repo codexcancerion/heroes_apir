@@ -7,10 +7,10 @@ class GameOverScreen extends StatelessWidget {
   final VoidCallback onRestart;
 
   const GameOverScreen({
-    Key? key,
+    super.key,
     required this.winner,
     required this.onRestart,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

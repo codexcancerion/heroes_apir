@@ -7,7 +7,7 @@ import 'package:heroes_apir/screens/mainmenu.dart';
 import 'package:heroes_apir/widgets/hero_details_widget.dart';
 
 class HeroOfTheDayPage extends StatefulWidget {
-  const HeroOfTheDayPage({Key? key}) : super(key: key);
+  const HeroOfTheDayPage({super.key});
 
   @override
   _HeroOfTheDayPage createState() => _HeroOfTheDayPage();

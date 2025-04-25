@@ -6,7 +6,7 @@ import 'package:heroes_apir/widgets/hero_details_widget.dart';
 class HeroFullInformation extends StatelessWidget {
   final HeroModel hero;
 
-  const HeroFullInformation({Key? key, required this.hero}) : super(key: key);
+  const HeroFullInformation({super.key, required this.hero});
 
   @override
   Widget build(BuildContext context) {

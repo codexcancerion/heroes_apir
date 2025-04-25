@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class PowerStatsWidget extends StatefulWidget {
   final Map<String, int> powerStats;
 
-  const PowerStatsWidget({Key? key, required this.powerStats})
-    : super(key: key);
+  const PowerStatsWidget({super.key, required this.powerStats});
 
   @override
   _PowerStatsWidgetState createState() => _PowerStatsWidgetState();

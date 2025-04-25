@@ -9,7 +9,7 @@ import 'package:heroes_apir/screens/mainmenu.dart';
 import '/widgets/hero_card_widget.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -68,8 +68,6 @@ class _HomePageState extends State<HomePage> {
           _hasMore = false;
         }
       });
-    } catch (e) {
-      print('Error fetching heroes: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -96,7 +94,7 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Welcome Message
-                    Container(
+                    SizedBox(
                       height: 500,
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),

@@ -5,10 +5,11 @@ import 'package:heroes_apir/models/GameEngine.dart';
 import 'package:heroes_apir/models/BattleResult.dart';
 import 'package:heroes_apir/db/hero_dao.dart';
 import 'package:heroes_apir/screens/game_over.dart';
+import 'package:heroes_apir/screens/mainmenu.dart';
 import 'package:heroes_apir/widgets/small_hero_card.dart';
 
 class Battleground extends StatefulWidget {
-  const Battleground({Key? key}) : super(key: key);
+  const Battleground({super.key});
 
   @override
   _BattlegroundState createState() => _BattlegroundState();
@@ -52,7 +53,6 @@ class _BattlegroundState extends State<Battleground> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error initializing game: $e');
       setState(() {
         _isLoading = false;
       });
@@ -290,7 +290,7 @@ class _BattlegroundState extends State<Battleground> {
 
                     // Selected Cards
                     if (_lastBattleResult != null)
-                      Row(
+                      Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SmallHeroCard(
@@ -354,6 +354,7 @@ class _BattlegroundState extends State<Battleground> {
                   ],
                 ),
               ),
+              floatingActionButton: MainMenu(),
     );
   }
 
@@ -372,7 +373,7 @@ class _BattlegroundState extends State<Battleground> {
               Row(
                 children: [
                   Text(
-                    '$owner',
+                    owner,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

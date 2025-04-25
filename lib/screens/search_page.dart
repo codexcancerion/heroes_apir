@@ -5,7 +5,7 @@ import 'package:heroes_apir/utils/api.dart';
 import 'package:heroes_apir/widgets/hero_card_widget.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  const SearchPage({super.key});
 
   @override
   _SearchPageState createState() => _SearchPageState();

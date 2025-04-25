@@ -5,7 +5,7 @@ import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/widgets/small_hero_card.dart';
 
 class TestPage extends StatefulWidget {
-  const TestPage({Key? key}) : super(key: key);
+  const TestPage({super.key});
 
   @override
   _TestPageState createState() => _TestPageState();
@@ -42,7 +42,6 @@ class _TestPageState extends State<TestPage> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching heroes: $e');
       setState(() {
         _isLoading = false;
       });
@@ -73,8 +72,8 @@ class _TestPageState extends State<TestPage> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: _fetchRandomHeroes,
-        child: const Icon(Icons.refresh),
         tooltip: 'Refresh Heroes',
+        child: const Icon(Icons.refresh),
       ),
     );
   }

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heroes_apir/screens/loginpage.dart';
-import 'db/database_manager.dart'; // Import the DatabaseManager
-import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Import sqflite_common_ffi for databaseFactoryFfi
 
 void main() async {
-  databaseFactory = databaseFactoryFfi;
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
-  await DatabaseManager.instance.database; // Initialize the database
   runApp(const MyApp());
 }
 

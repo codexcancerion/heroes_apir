@@ -9,7 +9,7 @@ class BookmarksPage extends StatelessWidget {
   final HeroDao _heroDao = HeroDao();
   final BookmarkDao _bookmarkDao = BookmarkDao();
 
-  BookmarksPage({Key? key}) : super(key: key);
+  BookmarksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -125,8 +125,8 @@ class BookmarksPage extends StatelessWidget {
         if (hero != null) {
           heroes.add(hero);
         }
+      // ignore: empty_catches
       } catch (e) {
-        print('Failed to fetch hero with ID $id from the database: $e');
       }
     }
 

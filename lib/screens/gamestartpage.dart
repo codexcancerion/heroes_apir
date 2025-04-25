@@ -6,7 +6,7 @@ import 'package:heroes_apir/screens/homepage.dart';
 import 'package:heroes_apir/utils/api.dart';
 
 class GameStartPage extends StatefulWidget {
-  const GameStartPage({Key? key}) : super(key: key);
+  const GameStartPage({super.key});
 
   @override
   _GameStartPageState createState() => _GameStartPageState();
@@ -18,11 +18,11 @@ class _GameStartPageState extends State<GameStartPage> {
   final HeroDao _heroDao = HeroDao();
   final List<String> _loadingMessages = [
     "Loading heroes...",
-    // "Assembling the Justice League...",
-    // "Calling the Avengers...",
-    // "Powering up the Bat-Signal...",
-    // "Scanning for supervillains...",
-    // "Preparing your hero database...",
+    "Assembling the Justice League...",
+    "Calling the Avengers...",
+    "Powering up the Bat-Signal...",
+    "Scanning for supervillains...",
+    "Preparing your hero database...",
   ];
   int _currentMessageIndex = 0;
 
@@ -46,7 +46,7 @@ class _GameStartPageState extends State<GameStartPage> {
 
       if (_currentMessageIndex >= _loadingMessages.length) {
         timer.cancel();
-        await _checkAndFetchHeroes(); // Ensure heroes are loaded
+        // await _checkAndFetchHeroes(); // Ensure heroes are loaded
         if (mounted) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const HomePage()),
