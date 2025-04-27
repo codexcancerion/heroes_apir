@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heroes_apir/db/api_access_token_dao.dart';
+import 'package:heroes_apir/screens/about-us.dart';
 import 'package:heroes_apir/screens/battleground.dart';
 import 'package:heroes_apir/screens/bookmarks.dart';
 import 'package:heroes_apir/screens/heroofthedaypage.dart';
@@ -95,15 +96,26 @@ class MainMenu extends StatelessWidget {
               ),
               _buildMenuButton(
                 context,
-                icon: Icons.science, 
-                label: 'Test Page',
+                icon: Icons.people, 
+                label: 'About Us',
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TestPage()),
+                    MaterialPageRoute(builder: (context) => AboutUs()),
                   );
                 },
               ),
+              // _buildMenuButton(
+              //   context,
+              //   icon: Icons.science, 
+              //   label: 'Test Page',
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => TestPage()),
+              //     );
+              //   },
+              // ),
               _buildMenuButton(
                 context,
                 icon: Icons.logout,

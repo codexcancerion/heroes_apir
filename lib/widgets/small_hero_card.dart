@@ -13,7 +13,8 @@ class SmallHeroCard extends StatefulWidget {
   const SmallHeroCard({
     super.key,
     required this.hero,
-    this.imageProxyUrl = "https://superheroes-proxy.vercel.app/api/proxy-image?url=",
+    this.imageProxyUrl =
+        "https://superheroes-proxy.vercel.app/api/proxy-image?url=",
     this.isSelected = true, // Default value is false
   });
 
@@ -21,15 +22,29 @@ class SmallHeroCard extends StatefulWidget {
   _SmallHeroCardState createState() => _SmallHeroCardState();
 }
 
-class _SmallHeroCardState extends State<SmallHeroCard> {
+class _SmallHeroCardState extends State<SmallHeroCard> with SingleTickerProviderStateMixin {
   bool _isBookmarked = false;
   final BookmarkDao _bookmarkDao = BookmarkDao();
+  late AnimationController _flameController;
 
   @override
   void initState() {
     super.initState();
     _checkIfBookmarked();
+
+    // Initialize the flame controller
+    _flameController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat(reverse: true);
   }
+  
+  @override
+  void dispose() {
+    _flameController.dispose();
+    super.dispose();
+  }
+
 
   Future<void> _checkIfBookmarked() async {
     final isBookmarked = await _bookmarkDao.isBookmarked(widget.hero.id);
@@ -57,39 +72,39 @@ class _SmallHeroCardState extends State<SmallHeroCard> {
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 200,
-          maxHeight: 316,
-        ),
+        constraints: const BoxConstraints(maxWidth: 200, maxHeight: 300),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300), // Smooth transition
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            gradient: widget.isSelected
-                ? const LinearGradient(
-                    colors: [Colors.blue, Colors.purple],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                : null,
-            boxShadow: widget.isSelected
-                ? [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(0.5),
-                      blurRadius: 10,
-                      spreadRadius: .5,
-                    ),
-                  ]
-                : [],
+            gradient:
+                widget.isSelected
+                    ? const LinearGradient(
+                      colors: [Colors.blue, Colors.purple],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                    : null,
+            boxShadow:
+                widget.isSelected
+                    ? [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.5),
+                        blurRadius: 10,
+                        spreadRadius: .5,
+                      ),
+                    ]
+                    : [],
           ),
           child: Card(
             elevation: 5,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
-            margin: widget.isSelected
-                ? const EdgeInsets.all(3) // Add space for gradient border
-                : EdgeInsets.zero,
+            margin:
+                widget.isSelected
+                    ? const EdgeInsets.all(3) // Add space for gradient border
+                    : EdgeInsets.zero,
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Column(
@@ -129,35 +144,40 @@ class _SmallHeroCardState extends State<SmallHeroCard> {
                           children: [
                             SizedBox(
                               height: 24, // Fixed height for the marquee
-                              child: widget.hero.name.length > 8
-                                  ? Marquee(
-                                      text: widget.hero.name,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
+                              child:
+                                  widget.hero.name.length > 8
+                                      ? Marquee(
+                                        text: widget.hero.name,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                        scrollAxis: Axis.horizontal,
+                                        blankSpace: 20.0,
+                                        velocity: 30.0,
+                                        pauseAfterRound: const Duration(
+                                          seconds: 1,
+                                        ),
+                                        startPadding: 10.0,
+                                        accelerationDuration: const Duration(
+                                          seconds: 1,
+                                        ),
+                                        accelerationCurve: Curves.easeIn,
+                                        decelerationDuration: const Duration(
+                                          milliseconds: 500,
+                                        ),
+                                        decelerationCurve: Curves.easeOut,
+                                      )
+                                      : Text(
+                                        widget.hero.name,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      scrollAxis: Axis.horizontal,
-                                      blankSpace: 20.0,
-                                      velocity: 30.0,
-                                      pauseAfterRound: const Duration(seconds: 1),
-                                      startPadding: 10.0,
-                                      accelerationDuration:
-                                          const Duration(seconds: 1),
-                                      accelerationCurve: Curves.easeIn,
-                                      decelerationDuration:
-                                          const Duration(milliseconds: 500),
-                                      decelerationCurve: Curves.easeOut,
-                                    )
-                                  : Text(
-                                      widget.hero.name,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -177,40 +197,84 @@ class _SmallHeroCardState extends State<SmallHeroCard> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // Power Stats Section
                   PowerStatsWidget(powerStats: widget.hero.powerStats.toMap()),
-                  const SizedBox(height: 8),
-                  // View Info Button
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    HeroFullInformation(hero: widget.hero),
-                              ),
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.info_outline,
-                            color: Colors.black54,
+                  const Divider(
+                    color: Colors.black54,
+                    thickness: 0.5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => HeroFullInformation(
+                                        hero: widget.hero,
+                                      ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.info_outline,
+                              color: Colors.black54,
+                            ),
                           ),
-                        ),
-                        IconButton(
-                          onPressed: _toggleBookmark,
-                          icon: Icon(
-                            _isBookmarked
-                                ? Icons.bookmark
-                                : Icons.bookmark_border,
-                            color: _isBookmarked ? Colors.blue : Colors.black54,
+                          IconButton(
+                            onPressed: _toggleBookmark,
+                            icon: Icon(
+                              _isBookmarked
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
+                              color:
+                                  _isBookmarked ? Colors.blue : Colors.black54,
+                            ),
                           ),
+                        ],
+                      ),
+                      widget.hero.powerStats.totalScore() >= 500
+                      ? Row(
+                        children: [
+                          AnimatedBuilder(
+                            animation: _flameController,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: 1 + (_flameController.value * 0.2),
+                                child: const Icon(
+                                  Icons.local_fire_department,
+                                  color: Colors.red,
+                                  size: 20,
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            widget.hero.powerStats.totalScore().toString(),
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      )
+                      : Text(
+                        widget.hero.powerStats.totalScore().toString(),
+                        style: TextStyle(
+                          color:
+                              widget.hero.powerStats.totalScore() >= 400
+                                  ? Colors.blue.shade700
+                                  : Colors.black54,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),

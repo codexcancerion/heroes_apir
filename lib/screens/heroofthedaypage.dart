@@ -5,6 +5,7 @@ import 'package:heroes_apir/db/hero_dao.dart';
 import 'package:heroes_apir/models/HeroModel.dart';
 import 'package:heroes_apir/screens/mainmenu.dart';
 import 'package:heroes_apir/widgets/hero_details_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
 
 class HeroOfTheDayPage extends StatefulWidget {
   const HeroOfTheDayPage({super.key});
@@ -33,19 +34,45 @@ class _HeroOfTheDayPage extends State<HeroOfTheDayPage> {
     });
 
     try {
-      // Generate a random number between 1 and 731
-      final randomId = Random().nextInt(731) + 1;
+      final prefs = await SharedPreferences.getInstance();
 
-      // Fetch the hero by ID from the database
-      final fetchedHero = await _heroDao.getHeroById(randomId);
-      if (fetchedHero != null) {
-        setState(() {
-          hero = fetchedHero;
-        });
+      // Check if a hero of the day is already saved in SharedPreferences
+      final savedHeroId = prefs.getInt('heroOfTheDayId');
+      final savedDate = prefs.getString('heroOfTheDayDate');
+
+      // Get the current date in "yyyy-MM-dd" format
+      final currentDate = DateTime.now().toIso8601String().split('T').first;
+
+      if (savedHeroId != null && savedDate == currentDate) {
+        // If the saved date matches the current date, fetch the saved hero
+        final savedHero = await _heroDao.getHeroById(savedHeroId);
+        if (savedHero != null) {
+          setState(() {
+            hero = savedHero;
+          });
+        } else {
+          setState(() {
+            _errorMessage = 'Saved hero not found in the database.';
+          });
+        }
       } else {
-        setState(() {
-          _errorMessage = 'Hero not found in the database.';
-        });
+        // Generate a new hero of the day
+        final randomId = Random().nextInt(731) + 1;
+        final fetchedHero = await _heroDao.getHeroById(randomId);
+
+        if (fetchedHero != null) {
+          setState(() {
+            hero = fetchedHero;
+          });
+
+          // Save the hero ID and the current date to SharedPreferences
+          await prefs.setInt('heroOfTheDayId', randomId);
+          await prefs.setString('heroOfTheDayDate', currentDate);
+        } else {
+          setState(() {
+            _errorMessage = 'Hero not found in the database.';
+          });
+        }
       }
     } catch (e) {
       setState(() {

@@ -34,7 +34,7 @@ class _PowerStatsWidgetState extends State<PowerStatsWidget>
       children:
           widget.powerStats.entries.map((entry) {
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

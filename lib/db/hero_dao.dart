@@ -67,6 +67,89 @@ class HeroDao {
     });
   }
 
+  // New function to update a hero in the database
+  Future<void> updateHero(HeroModel hero) async {
+    final db = await database;
+
+    // Update the heroes table
+    await db.update(
+      'heroes',
+      {
+        'name': hero.name,
+        'imageUrl': hero.imageUrl,
+      },
+      where: 'id = ?',
+      whereArgs: [hero.id],
+    );
+
+    // Update the powerstats table
+    await db.update(
+      'powerstats',
+      {
+        'intelligence': hero.powerStats.intelligence,
+        'strength': hero.powerStats.strength,
+        'speed': hero.powerStats.speed,
+        'durability': hero.powerStats.durability,
+        'power': hero.powerStats.power,
+        'combat': hero.powerStats.combat,
+      },
+      where: 'heroId = ?',
+      whereArgs: [hero.id],
+    );
+
+    // Update the biography table
+    await db.update(
+      'biography',
+      {
+        'fullName': hero.biography.fullName,
+        'alterEgos': hero.biography.alterEgos,
+        'aliases': hero.biography.aliases.join(','),
+        'placeOfBirth': hero.biography.placeOfBirth,
+        'firstAppearance': hero.biography.firstAppearance,
+        'publisher': hero.biography.publisher,
+        'alignment': hero.biography.alignment,
+      },
+      where: 'heroId = ?',
+      whereArgs: [hero.id],
+    );
+
+    // Update the appearance table
+    await db.update(
+      'appearance',
+      {
+        'gender': hero.appearance.gender,
+        'race': hero.appearance.race,
+        'height': hero.appearance.height.join(','),
+        'weight': hero.appearance.weight.join(','),
+        'eyeColor': hero.appearance.eyeColor,
+        'hairColor': hero.appearance.hairColor,
+      },
+      where: 'heroId = ?',
+      whereArgs: [hero.id],
+    );
+
+    // Update the work table
+    await db.update(
+      'work',
+      {
+        'occupation': hero.work.occupation,
+        'base': hero.work.base,
+      },
+      where: 'heroId = ?',
+      whereArgs: [hero.id],
+    );
+
+    // Update the connections table
+    await db.update(
+      'connections',
+      {
+        'groupAffiliation': hero.connections.groupAffiliation,
+        'relatives': hero.connections.relatives,
+      },
+      where: 'heroId = ?',
+      whereArgs: [hero.id],
+    );
+  }
 
   Future<HeroModel?> getHeroById(int id) async {
     final db = await database;
@@ -148,8 +231,6 @@ class HeroDao {
     );
   }
 
-  
-  // New method to fetch all heroes
   Future<List<HeroModel>> getAllHeroes() async {
     final db = await database;
 
@@ -171,6 +252,4 @@ class HeroDao {
 
     return heroes;
   }
-
-
 }

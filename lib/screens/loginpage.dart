@@ -59,10 +59,10 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: const BoxConstraints(
-              maxWidth: 400, // Set a max width for responsiveness
+              maxWidth: 320, // Set a max width for responsiveness
             ),
             child: Card(
-              elevation: 8,
+              elevation: 3,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),

@@ -16,6 +16,8 @@ dependencies:
   path: ^1.9.1
   sqflite_common_ffi: ^2.3.5
   marquee: ^2.3.0
+  audioplayers: ^6.4.0
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
@@ -43,6 +45,12 @@ flutter:
   assets:
     - assets/database/heroes_apir.db
     - assets/icon/app_icon.png
+    - assets/sounds/apir-win.wav
+    - assets/sounds/battle-win.mp3
+    - assets/sounds/apir-lose.mp3
+    - assets/sounds/battle-lost.mp3
+    - assets/sounds/dice.mp3
+    - assets/sounds/floating-cat.mp3
 
 flutter_icons:
   android: true
