@@ -102,11 +102,11 @@ class _AboutUsState extends State<AboutUs> with SingleTickerProviderStateMixin {
   Future<void> _startAnimation() async {
     final totalItems = _staticContent.length + _heroes.length;
 
-    for (int i = 1; i <= totalItems; i++) {
-      await Future.delayed(const Duration(milliseconds: 500)); // Delay between items
+    for (int i = 0; i < totalItems; i++) {
       setState(() {
-        _visibleItems = i; // Increment the number of visible items
+        _visibleItems = i + 1; // Increment the number of visible items
       });
+      await Future.delayed(const Duration(milliseconds: 500)); // Delay between items
       _controller.forward(from: 0.0); // Restart the fade animation for each item
     }
   }

@@ -18,11 +18,11 @@ class _GameStartPageState extends State<GameStartPage> {
   final HeroDao _heroDao = HeroDao();
   final List<String> _loadingMessages = [
     "Loading heroes...",
-    // "Assembling the Justice League...",
-    // "Calling the Avengers...",
-    // "Powering up the Bat-Signal...",
-    // "Scanning for supervillains...",
-    // "Preparing your hero database...",
+    "Assembling the Justice League...",
+    "Calling the Avengers...",
+    "Powering up the Bat-Signal...",
+    "Scanning for supervillains...",
+    "Preparing your hero database...",
   ];
   int _currentMessageIndex = 0;
 

@@ -91,8 +91,7 @@ class _BattlegroundState extends State<Battleground> {
         computerCard,
       );
 
-      _gameEngine.player.deck.remove(_selectedPlayerCard);
-      _selectedPlayerCard = null;
+      // Do not remove the player's selected card yet; wait until after dice logic
       _isRoundComplete = true; // Mark the round as complete
 
       // Reset winner text visibility and trigger delayed display
@@ -161,6 +160,8 @@ class _BattlegroundState extends State<Battleground> {
                               );
                             }
                           }
+                          // Remove the player's selected card after adding new cards
+                          _gameEngine.player.deck.remove(_selectedPlayerCard);
                         } else if (_lastBattleResult!.winner == 'computer') {
                           // Draw diceNumber cards and add them to the computer's deck
                           for (int i = 0; i < randomDiceNumber; i++) {
@@ -175,6 +176,7 @@ class _BattlegroundState extends State<Battleground> {
 
                       _battleResultMessage = null;
                       _lastBattleResult = null;
+                      _selectedPlayerCard = null; // Reset the selected card
                       _isRoundComplete = false; // Reset for the next round
                       _round++;
                     });
