@@ -3,6 +3,11 @@
 Heroes Apir is a turn-based card battle game where players and the computer select superheroes to fight using stats like intelligence, strength, and speed. The winner of each round draws an additional card from a master deck. The game continues until one party runs out of cards. The app also supports bookmarking heroes, tracking gameplay statistics, and browsing hero profiles.
 
 ---
+## Downloads
+1. [Android APK](https://github.com/codexcancerion/heroes_apir/releases/download/v1.1.0/app-release-v1.1.0.apk)
+2. [Windows EXE](https://github.com/codexcancerion/heroes_apir/releases/download/v1.1.0/app-release-windows-v1.1.0.exe)
+
+---
 
 ## **Table of Contents**
 1. [Overview](#overview)
