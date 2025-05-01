@@ -13,12 +13,12 @@ class GameEngine {
     cardPool.shuffle();
     player = PlayerModel(
       name: 'Player',
-      deck: cardPool.sublist(0, 1),
+      deck: cardPool.sublist(0, 5),
       hand: [],
     );
     computer = PlayerModel(
       name: 'Computer',
-      deck: cardPool.sublist(5, 10),
+      deck: cardPool.sublist(5, 6),
       hand: [],
     );
   }
@@ -37,5 +37,13 @@ class GameEngine {
       winner: winner,
       reason: 'Score: $playerScore vs $computerScore',
     );
+  }
+
+  void removeCardByIndex(int index) {
+    if (index >= 0 && index < cardPool.length) {
+      cardPool.removeAt(index);
+    } else {
+      throw RangeError('Index out of range: $index');
+    }
   }
 }

@@ -18,6 +18,7 @@ dependencies:
   marquee: ^2.3.0
   audioplayers: ^6.4.0
   shared_preferences: ^2.0.15
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

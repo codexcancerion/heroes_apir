@@ -34,7 +34,7 @@ class _GameStartPageState extends State<GameStartPage> {
 
   // Rotates loading messages sequentially and navigates after all messages are shown
   void _startLoadingSequence() {
-    Timer.periodic(const Duration(seconds: 2), (timer) async {
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (!mounted) {
         timer.cancel();
         return;

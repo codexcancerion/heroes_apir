@@ -24,4 +24,13 @@ class PlayerModel {
   }
 
   bool hasCards() => hand.isNotEmpty;
+
+  
+  void removeCardOnDeckByIndex(int index) {
+    if (index >= 0 && index < deck.length) {
+      deck.removeAt(index);
+    } else {
+      throw RangeError('Index out of range: $index');
+    }
+  }
 }

@@ -14,7 +14,7 @@ class SmallHeroCard extends StatefulWidget {
     super.key,
     required this.hero,
     this.imageProxyUrl =
-        "https://superheroes-proxy.vercel.app/api/proxy-image?url=",
+        "",
     this.isSelected = true, // Default value is false
   });
 
@@ -118,7 +118,7 @@ class _SmallHeroCardState extends State<SmallHeroCard> with SingleTickerProvider
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          widget.imageProxyUrl + widget.hero.imageUrl,
+                          widget.hero.imageUrl,
                           height: 60,
                           width: 60,
                           fit: BoxFit.cover,
