@@ -18,7 +18,7 @@ class GameEngine {
     );
     computer = PlayerModel(
       name: 'Computer',
-      deck: cardPool.sublist(5, 6),
+      deck: cardPool.sublist(5, 10),
       hand: [],
     );
   }

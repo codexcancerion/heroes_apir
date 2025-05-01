@@ -245,11 +245,25 @@ class _BattlegroundState extends State<Battleground> {
     );
   }
 
-  void _addCardsToDeck(List<BattlegroundCard.Card> deck, int count) {
+    void _addCardsToDeck(List<BattlegroundCard.Card> deck, int count) {
     for (int i = 0; i < count; i++) {
       if (_gameEngine.cardPool.isNotEmpty) {
-        final card = _gameEngine.cardPool.removeAt(0); // Remove from card pool
-        deck.add(card); // Add to the winner's deck
+        final isSpecialRange = Random().nextDouble() < 0.2; // 20% chance
+        BattlegroundCard.Card? cardToAdd;
+  
+        if (isSpecialRange) {
+          // Try to get a card from the special range (732-737)
+          cardToAdd = _gameEngine.cardPool.firstWhere(
+            (card) => card.hero.id >= 732 && card.hero.id <= 737,
+            orElse: () => BattlegroundCard.Card(hero: _gameEngine.cardPool.first.hero, id: _gameEngine.cardPool.first.hero.id), // Fallback to a default card if no special card is found
+          );
+        }
+  
+        // If no special card is found or 40% chance fails, add a random card
+        cardToAdd ??= _gameEngine.cardPool.removeAt(0);
+  
+        deck.add(cardToAdd); // Add the selected card to the deck
+        _gameEngine.cardPool.remove(cardToAdd); // Remove the card from the pool
       }
     }
   }
