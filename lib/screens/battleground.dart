@@ -123,156 +123,111 @@ class _BattlegroundState extends State<Battleground> {
   }
 
   void _nextRound() {
-    if (_gameEngine.player.deck.isEmpty ||
-        _gameEngine.computer.deck.isEmpty ||
-        (_lastBattleResult?.winner == 'computer' &&
-            _gameEngine.player.deck.length == 1) ||
-        (_lastBattleResult?.winner == 'player' &&
-            _gameEngine.computer.deck.length == 1)) {
-      _gameEngine.player.deck.remove(_selectedPlayerCard!);
-      _gameEngine.computer.deck.removeAt(0);
-      final winner =
-          _gameEngine.player.deck.isEmpty
-              ? 'Computer Won the Game!'
-              : 'You Won the Game!';
+    // Check if the game should end
+    if (_gameEngine.player.deck.isEmpty || _gameEngine.computer.deck.isEmpty || (_lastBattleResult?.winner == 'computer' && _gameEngine.player.deck.length == 1) || (_lastBattleResult?.winner == 'player' && _gameEngine.computer.deck.length == 1)) {
+      _gameEngine.player.deck.length == 1 ? _gameEngine.player.deck.removeAt(0) : null;
+      _gameEngine.computer.deck.length == 1 ? _gameEngine.computer.deck.removeAt(0) : null;
+      final winner = _gameEngine.player.deck.isEmpty
+          ? 'Computer Won the Game!'
+          : 'You Won the Game!';
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder:
-              (context) =>
-                  GameOverScreen(winner: winner, onRestart: _restartGame),
+          builder: (context) => GameOverScreen(winner: winner, onRestart: _restartGame),
         ),
       );
       return;
     }
 
-    if (_lastBattleResult?.winner != 'player') {
-      _gameEngine.player.deck.remove(_selectedPlayerCard!);
+    // Handle the case where the player or computer used their last card
+    if (_lastBattleResult != null) {
+      if (_lastBattleResult!.winner == 'player' && _gameEngine.computer.deck.length == 1) {
+        // Player wins with their last card
+        _handleDiceFunctionality(() {
+          _gameEngine.computer.deck.removeAt(0); // Remove the computer's last card after dice functionality
+        });
+        return;
+      } else if (_lastBattleResult!.winner == 'computer' && _gameEngine.player.deck.length == 1) {
+        // Computer wins with their last card
+        _handleDiceFunctionality(() {
+          _gameEngine.player.deck.remove(_selectedPlayerCard!); // Remove the player's last card after dice functionality
+        });
+        return;
+      } else if (_lastBattleResult!.winner == 'computer' && _gameEngine.player.deck.length == 1) {
+        // Player loses with their last card
+        _gameEngine.player.deck.remove(_selectedPlayerCard!);
+        final winner = 'Computer Won the Game!';
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameOverScreen(winner: winner, onRestart: _restartGame),
+          ),
+        );
+        return;
+      } else if (_lastBattleResult!.winner == 'player' && _gameEngine.computer.deck.length == 1) {
+        // Computer loses with their last card
+        _gameEngine.computer.deck.removeAt(0);
+        final winner = 'You Won the Game!';
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameOverScreen(winner: winner, onRestart: _restartGame),
+          ),
+        );
+        return;
+      }
     }
 
-    if (_lastBattleResult?.winner != 'computer') {
+    // Remove the used cards if the game is not over
+    // if (_lastBattleResult?.winner != 'player') {
+      _gameEngine.player.deck.remove(_selectedPlayerCard!);
+    // }
+    // if (_lastBattleResult?.winner != 'computer') {
       _gameEngine.computer.deck.removeAt(0);
-    }
+    // }
 
     // Show the DiceWidget modal
-    final int randomDiceNumber =
-        Random().nextInt(6) + 1; // Generate a random number between 1 and 6
+    _handleDiceFunctionality(() {});
+  }
+
+  void _handleDiceFunctionality(VoidCallback onDiceComplete) {
+    final int randomDiceNumber = Random().nextInt(6) + 1; // Generate a random number between 1 and 6
     showDialog(
       context: context,
-      barrierDismissible:
-          true, // Allow dismissing the dialog by tapping outside
+      barrierDismissible: true, // Allow dismissing the dialog by tapping outside
       builder: (BuildContext context) {
         return Stack(
           children: [
             // Semi-transparent background
             GestureDetector(
-              onTap:
-                  () => Navigator.of(context).pop(), // Close the dialog on tap
+              onTap: () => Navigator.of(context).pop(), // Close the dialog on tap
               child: Container(
-                color: Colors.black.withOpacity(
-                  0.5,
-                ), // Semi-transparent black background
+                color: Colors.black.withOpacity(0.5), // Semi-transparent black background
               ),
             ),
             // Centered Dice Widget
             Center(
               child: Material(
-                color:
-                    Colors
-                        .transparent, // Make the dialog background transparent
+                color: Colors.transparent, // Make the dialog background transparent
                 child: DiceWidget(
                   diceNumber: randomDiceNumber, // Pass the random dice number
                   onProceed: () {
                     Navigator.of(context).pop(); // Close the modal
                     setState(() {
-                      // Determine the winner of the last round
+                      // Add cards to the winner's deck
                       if (_lastBattleResult != null) {
                         if (_lastBattleResult!.winner == 'player') {
-                          // Draw diceNumber cards and add them to the player's deck
-                          for (int i = 0; i < randomDiceNumber; i++) {
-                            if (_gameEngine.cardPool.isNotEmpty) {
-                              final isSpecialRange =
-                                  Random().nextDouble() < 0.3; // 60% chance
-                              BattlegroundCard.Card? cardToAdd;
-
-                              if (isSpecialRange) {
-                                // Try to get a card from the special range (732-737)
-                                cardToAdd = _gameEngine.cardPool.firstWhere(
-                                  (card) =>
-                                      card.hero.id >= 732 &&
-                                      card.hero.id <= 737 &&
-                                      !_gameEngine.player.deck.contains(card),
-                                  orElse:
-                                      () => BattlegroundCard.Card(
-                                        hero: _gameEngine.cardPool.first.hero,
-                                        id: _gameEngine.cardPool.first.hero.id,
-                                      ), // Fallback to a default card if no unique card is found
-                                );
-                              }
-
-                              // If no special card is found or 60% chance fails, add a random unique card
-                              cardToAdd ??= _gameEngine.cardPool.firstWhere(
-                                (card) =>
-                                    !_gameEngine.player.deck.contains(card),
-                                orElse:
-                                    () => BattlegroundCard.Card(
-                                      hero: _gameEngine.cardPool.first.hero,
-                                      id: _gameEngine.cardPool.first.hero.id,
-                                    ), // Fallback to a default card if no unique card is found
-                              );
-
-                              if (cardToAdd != null) {
-                                _gameEngine.player.deck.add(cardToAdd);
-                                _gameEngine.cardPool.remove(cardToAdd);
-                              }
-                            }
-                          }
-                          // Remove the player's selected card after adding new cards
-                          _gameEngine.player.deck.remove(_selectedPlayerCard);
+                          _addCardsToDeck(_gameEngine.player.deck, randomDiceNumber);
                         } else if (_lastBattleResult!.winner == 'computer') {
-                          // Draw diceNumber cards and add them to the computer's deck
-                          for (int i = 0; i < randomDiceNumber; i++) {
-                            if (_gameEngine.cardPool.isNotEmpty) {
-                              final isSpecialRange =
-                                  Random().nextDouble() < 0.3; // 60% chance
-                              BattlegroundCard.Card? cardToAdd;
-
-                              if (isSpecialRange) {
-                                // Try to get a card from the special range (732-737)
-                                cardToAdd = _gameEngine.cardPool.firstWhere(
-                                  (card) =>
-                                      card.hero.id >= 732 &&
-                                      card.hero.id <= 737 &&
-                                      !_gameEngine.computer.deck.contains(card),
-                                  orElse:
-                                      () => BattlegroundCard.Card(
-                                        hero: _gameEngine.cardPool.first.hero,
-                                        id: _gameEngine.cardPool.first.hero.id,
-                                      ), // Fallback to a default card if no unique card is found
-                                );
-                              }
-
-                              // If no special card is found or 60% chance fails, add a random unique card
-                              cardToAdd ??= _gameEngine.cardPool.firstWhere(
-                                (card) =>
-                                    !_gameEngine.computer.deck.contains(card),
-                                orElse:
-                                    () => BattlegroundCard.Card(
-                                      hero: _gameEngine.cardPool.first.hero,
-                                      id: _gameEngine.cardPool.first.hero.id,
-                                    ), // Fallback to a default card if no unique card is found
-                              );
-
-                              if (cardToAdd != null) {
-                                _gameEngine.computer.deck.add(cardToAdd);
-                                _gameEngine.cardPool.remove(cardToAdd);
-                              }
-                            }
-                          }
-
-                          _gameEngine.computer.deck.removeAt(0);
+                          _addCardsToDeck(_gameEngine.computer.deck, randomDiceNumber);
+                        } else if (_lastBattleResult!.winner == 'draw') {
+                          _addCardsToDeck(_gameEngine.computer.deck, randomDiceNumber);
+                          _addCardsToDeck(_gameEngine.player.deck, randomDiceNumber);
                         }
                       }
+
+                      // Execute the callback after dice functionality
+                      onDiceComplete();
 
                       _battleResultMessage = null;
                       _lastBattleResult = null;
@@ -288,6 +243,15 @@ class _BattlegroundState extends State<Battleground> {
         );
       },
     );
+  }
+
+  void _addCardsToDeck(List<BattlegroundCard.Card> deck, int count) {
+    for (int i = 0; i < count; i++) {
+      if (_gameEngine.cardPool.isNotEmpty) {
+        final card = _gameEngine.cardPool.removeAt(0); // Remove from card pool
+        deck.add(card); // Add to the winner's deck
+      }
+    }
   }
 
   void _restartGame() {
@@ -468,11 +432,18 @@ class _BattlegroundState extends State<Battleground> {
                                     color: Colors.red,
                                   ),
                                 )
-                                : Text(
+                                : _lastBattleResult!.winner == 'player' ? 
+                                Text(
                                   "Winner: You",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.green,
+                                  ),
+                                ) : Text(
+                                  "It's a Draw",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.purple,
                                   ),
                                 ),
                           SizedBox(
